@@ -1,0 +1,375 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Bin_Or</title><meta name="generator" content="MATLAB 9.9"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2022-01-01"><meta name="DC.source" content="Bin_Or.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">Transmitter</a></li><li><a href="#3">M rect Pulse</a></li><li><a href="#4">Pwelch</a></li><li><a href="#5">Pwelch</a></li><li><a href="#6">Noise add by channel</a></li><li><a href="#7">Scatter</a></li><li><a href="#8">Scatter Plot</a></li><li><a href="#9">Demodulation</a></li><li><a href="#10">Decision Making (Optimum point Selection)</a></li><li><a href="#11">BER Calculation (Desicion)</a></li><li><a href="#12">BER Calculation (Prob of Error)</a></li><li><a href="#13">Return</a></li><li><a href="#14">UnIdeal</a></li><li><a href="#15">Decision Making (Optimum point Selection)</a></li><li><a href="#16">BER Calculation (Desicion)</a></li><li><a href="#17">BER Calculation (Prob of Error)</a></li><li><a href="#18">Return</a></li></ul></div><pre class="codeinput"><span class="keyword">function</span> [Bin_Or_optimum, Bin_Or_theory, Bin_Or_unideal] = Bin_Or(N, data, E, M);
+</pre><h2 id="2">Transmitter</h2><pre class="codeinput">clc;
+    data_sq = zeros(1,N) ; <span class="comment">%% Creating Binary Sequence</span>
+    <span class="keyword">for</span> i = 1 : N
+        <span class="keyword">if</span> data(i) &lt; 0.5
+            data_sq(i) = 0;
+        <span class="keyword">else</span>
+            data_sq(i) = 1;
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+</pre><pre class="codeoutput error">Not enough input arguments.
+
+Error in Bin_Or (line 4)
+    data_sq = zeros(1,N) ; %% Creating Binary Sequence
+</pre><h2 id="3">M rect Pulse</h2><pre class="codeinput">clc;
+   data_seq1 = zeros(1,N * M) ; <span class="comment">%Pre allocating for Date Sequence</span>
+   data_seq2 = zeros(1,N * M) ;
+    counter = 1; <span class="comment">%Counter on data seq array</span>
+    <span class="keyword">for</span> bit_counter = 1 : N
+        <span class="keyword">for</span> sym_counter = 1 : M
+            <span class="keyword">if</span> data_sq(bit_counter) == 1
+                data_seq1(1,counter) = data_sq(bit_counter); <span class="keyword">...</span>
+                    <span class="comment">%Repeat 0 or 1 M times</span>
+                counter = counter + 1;
+            <span class="keyword">else</span>
+                data_seq2(1,counter) = data_sq(bit_counter) + 1; <span class="keyword">...</span>
+                    <span class="comment">%Repeat 0 or 1 M times</span>
+                counter = counter + 1;
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>  <span class="comment">%We have to use two orthogonal basis like (1,i)</span>
+    <span class="keyword">end</span>
+    data_sqf = data_seq1 + j*data_seq2 ; <span class="comment">%Creating Binary Orthogonal</span>
+</pre><h2 id="4">Pwelch</h2><pre class="codeinput">    figure(1)
+    subplot(313)
+    pwelch(data_sqf)
+    title(<span class="string">"Binary Orthogonal Power Specteral"</span>)
+    grid <span class="string">on</span>;
+<span class="comment">%     xlabel('Frequency (Hz)')</span>
+<span class="comment">%     ylabel('Power (dB)')</span>
+    legend(<span class="string">'Binary Orthogonal PSD'</span>)
+</pre><h2 id="5">Pwelch</h2><pre class="codeinput">clc;
+    [pxx,f] = pwelch(data_sqf,[],[],[],1000,<span class="string">'centered'</span>,<span class="string">'power'</span>);
+    figure(2)
+    subplot(313)
+    plot(f,pow2db(pxx))
+    title(<span class="string">"Binary Orthogonal  Power Specteral"</span>)
+    grid <span class="string">on</span>;
+    xlabel(<span class="string">'Frequency (Hz)'</span>)
+    ylabel(<span class="string">'Power (dB)'</span>)
+    legend(<span class="string">'Binary Orthogonal '</span>)
+</pre><h2 id="6">Noise add by channel</h2><pre class="codeinput">    clc;
+    n = randn(1,length(data_sqf))+ 1i*randn(1,length(data_sqf)); <span class="comment">%noise</span>
+    r = sqrt(E / M) * data_sqf + n ; <span class="comment">%received Signal with Noise</span>
+    r0 = sqrt(E(120,1) / M) * data_sqf + n;
+</pre><h2 id="7">Scatter</h2><pre class="codeinput">clc;
+    figure(3)
+    subplot(313)
+    scatter(real(r(12,15:250)) , imag(r(12,15:250)),<span class="string">'k'</span>);
+    title(<span class="string">"Binary Orthogonal Constellation"</span>)
+    grid <span class="string">on</span>;
+    legend(<span class="string">'Binary Orthogonal Cons'</span>)
+    xlabel(<span class="string">'Real Part'</span>)
+    ylabel(<span class="string">'Imag Part'</span>)
+</pre><h2 id="8">Scatter Plot</h2><pre class="codeinput">    scatterplot(r0);
+    title(<span class="string">"Binary Orthogonal Constellation"</span>)
+    grid <span class="string">on</span>;
+    legend(<span class="string">'Binary Orthogonal Cons'</span>)
+    xlabel(<span class="string">'Real Part'</span>)
+    ylabel(<span class="string">'Imag Part'</span>)
+</pre><h2 id="9">Demodulation</h2><pre class="codeinput">    h = ones(1,M) / M ; <span class="comment">% Moving Average</span>
+    y = zeros(size(E,1), size(r,2) + M - 1); <span class="comment">%preallocating</span>
+    <span class="keyword">for</span> counter = 1 : size(E,1) <span class="comment">%E matrix 1st row</span>
+        y(counter, :) = conv(r(counter, :), h) ; <span class="comment">%convolution on 130 arrays</span>
+    <span class="keyword">end</span>
+</pre><h2 id="10">Decision Making (Optimum point Selection)</h2><pre class="codeinput">clc;
+    temp = zeros(size(E,1) , N ) ; <span class="comment">%Preallocating</span>
+    <span class="keyword">for</span> row = 1 : size(E, 1)
+        <span class="keyword">for</span> column = 1 : N
+            temp(row, column) = y(row, column * M); <span class="comment">%Optimum point Selection</span>
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+</pre><h2 id="11">BER Calculation (Desicion)</h2><pre class="codeinput">    br = zeros(size(E,1), N);
+    <span class="keyword">for</span> row_counter = 1 : size(E,1)
+        <span class="keyword">for</span> column_counter = 1 : N
+           <span class="keyword">if</span> real(temp(row_counter,column_counter)) &lt;<span class="keyword">...</span>
+                   imag(temp(row_counter,column_counter))
+
+               br(row_counter,column_counter) = 0 ;
+           <span class="keyword">else</span>
+                br(row_counter,column_counter) = 1 ;
+           <span class="keyword">end</span>
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+</pre><h2 id="12">BER Calculation (Prob of Error)</h2><pre class="codeinput">    pe = zeros(size(E,1), 1) ; <span class="comment">%Preallocating for Pr of error</span>
+    clc;
+    <span class="keyword">for</span> counter = 1 : size(E,1)
+        <span class="keyword">for</span> column_counter = 1 : N
+            <span class="keyword">if</span> br(counter,column_counter) ~= data(column_counter)
+                   pe(counter,1) = pe(counter,1) + 1 ;
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+</pre><h2 id="13">Return</h2><pre class="codeinput">    Bin_Or_optimum = pe' / N;
+    Bin_Or_theory = qfunc(sqrt(E)) ;
+</pre><h2 id="14">UnIdeal</h2><pre class="codeinput">    h = ones(1,M - 1) / M ; <span class="comment">% Moving Average with 1 sample delay</span>
+    y = zeros(size(E,1), size(r,2) + M - 2); <span class="comment">%preallocating</span>
+    <span class="keyword">for</span> counter = 1 : size(E,1) <span class="comment">%E matrix 1st row</span>
+        y(counter, :) = conv(r(counter, :), h) ; <span class="comment">%convolution on 130 arrays</span>
+    <span class="keyword">end</span>
+</pre><h2 id="15">Decision Making (Optimum point Selection)</h2><pre class="codeinput">clc;
+    temp = zeros(size(E,1) , N ) ; <span class="comment">%Preallocating</span>
+    <span class="keyword">for</span> row = 1 : size(E, 1)
+        <span class="keyword">for</span> column = 1 : N
+            temp(row, column) = y(row, column * M - 1); <span class="comment">%Optimum point Selection</span>
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+</pre><h2 id="16">BER Calculation (Desicion)</h2><pre class="codeinput">    br = zeros(size(E,1), N);
+    <span class="keyword">for</span> row_counter = 1 : size(E,1)
+        <span class="keyword">for</span> column_counter = 1 : N
+           <span class="keyword">if</span> real(temp(row_counter,column_counter)) &lt;<span class="keyword">...</span>
+                   imag(temp(row_counter,column_counter))
+
+               br(row_counter,column_counter) = 0 ;
+           <span class="keyword">else</span>
+                br(row_counter,column_counter) = 1 ;
+           <span class="keyword">end</span>
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+</pre><h2 id="17">BER Calculation (Prob of Error)</h2><pre class="codeinput">    pe = zeros(size(E,1), 1) ; <span class="comment">%Preallocating for Pr of error</span>
+    clc;
+    <span class="keyword">for</span> counter = 1 : size(E,1)
+        <span class="keyword">for</span> column_counter = 1 : N
+            <span class="keyword">if</span> br(counter,column_counter) ~= data(column_counter)
+                   pe(counter,1) = pe(counter,1) + 1 ;
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+</pre><h2 id="18">Return</h2><pre class="codeinput">    Bin_Or_unideal= pe' / N;
+</pre><pre class="codeinput"><span class="keyword">end</span>
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+function [Bin_Or_optimum, Bin_Or_theory, Bin_Or_unideal] = Bin_Or(N, data, E, M);
+%% Transmitter
+clc;
+    data_sq = zeros(1,N) ; %% Creating Binary Sequence
+    for i = 1 : N 
+        if data(i) < 0.5
+            data_sq(i) = 0;
+        else 
+            data_sq(i) = 1;
+        end
+    end
+%% M rect Pulse
+clc;
+   data_seq1 = zeros(1,N * M) ; %Pre allocating for Date Sequence
+   data_seq2 = zeros(1,N * M) ;
+    counter = 1; %Counter on data seq array
+    for bit_counter = 1 : N 
+        for sym_counter = 1 : M 
+            if data_sq(bit_counter) == 1
+                data_seq1(1,counter) = data_sq(bit_counter); ...
+                    %Repeat 0 or 1 M times
+                counter = counter + 1;
+            else
+                data_seq2(1,counter) = data_sq(bit_counter) + 1; ...
+                    %Repeat 0 or 1 M times
+                counter = counter + 1;
+            end
+        end  %We have to use two orthogonal basis like (1,i)
+    end
+    data_sqf = data_seq1 + j*data_seq2 ; %Creating Binary Orthogonal
+%% Pwelch
+    figure(1)
+    subplot(313)
+    pwelch(data_sqf)
+    title("Binary Orthogonal Power Specteral")
+    grid on;
+%     xlabel('Frequency (Hz)')
+%     ylabel('Power (dB)')
+    legend('Binary Orthogonal PSD')
+%% Pwelch
+clc;
+    [pxx,f] = pwelch(data_sqf,[],[],[],1000,'centered','power');
+    figure(2)
+    subplot(313)
+    plot(f,pow2db(pxx))
+    title("Binary Orthogonal  Power Specteral")
+    grid on;
+    xlabel('Frequency (Hz)')
+    ylabel('Power (dB)')
+    legend('Binary Orthogonal ') 
+%% Noise add by channel
+    clc;
+    n = randn(1,length(data_sqf))+ 1i*randn(1,length(data_sqf)); %noise 
+    r = sqrt(E / M) * data_sqf + n ; %received Signal with Noise
+    r0 = sqrt(E(120,1) / M) * data_sqf + n;
+%% Scatter
+clc;
+    figure(3)
+    subplot(313)
+    scatter(real(r(12,15:250)) , imag(r(12,15:250)),'k');
+    title("Binary Orthogonal Constellation")
+    grid on;
+    legend('Binary Orthogonal Cons')
+    xlabel('Real Part')
+    ylabel('Imag Part')
+%% Scatter Plot
+    scatterplot(r0);
+    title("Binary Orthogonal Constellation")
+    grid on;
+    legend('Binary Orthogonal Cons')
+    xlabel('Real Part')
+    ylabel('Imag Part')
+%% Demodulation
+    h = ones(1,M) / M ; % Moving Average
+    y = zeros(size(E,1), size(r,2) + M - 1); %preallocating
+    for counter = 1 : size(E,1) %E matrix 1st row
+        y(counter, :) = conv(r(counter, :), h) ; %convolution on 130 arrays
+    end
+%% Decision Making (Optimum point Selection)
+clc;
+    temp = zeros(size(E,1) , N ) ; %Preallocating 
+    for row = 1 : size(E, 1)
+        for column = 1 : N
+            temp(row, column) = y(row, column * M); %Optimum point Selection
+        end
+    end
+%% BER Calculation (Desicion)
+    br = zeros(size(E,1), N);
+    for row_counter = 1 : size(E,1)
+        for column_counter = 1 : N 
+           if real(temp(row_counter,column_counter)) <...
+                   imag(temp(row_counter,column_counter)) 
+               
+               br(row_counter,column_counter) = 0 ;
+           else 
+                br(row_counter,column_counter) = 1 ;
+           end
+        end
+    end
+%% BER Calculation (Prob of Error)
+    pe = zeros(size(E,1), 1) ; %Preallocating for Pr of error
+    clc;
+    for counter = 1 : size(E,1)
+        for column_counter = 1 : N 
+            if br(counter,column_counter) ~= data(column_counter)
+                   pe(counter,1) = pe(counter,1) + 1 ;
+            end
+        end
+    end
+%% Return 
+    Bin_Or_optimum = pe' / N;
+    Bin_Or_theory = qfunc(sqrt(E)) ; 
+%% UnIdeal
+    h = ones(1,M - 1) / M ; % Moving Average with 1 sample delay
+    y = zeros(size(E,1), size(r,2) + M - 2); %preallocating
+    for counter = 1 : size(E,1) %E matrix 1st row
+        y(counter, :) = conv(r(counter, :), h) ; %convolution on 130 arrays
+    end
+%% Decision Making (Optimum point Selection)
+clc;
+    temp = zeros(size(E,1) , N ) ; %Preallocating 
+    for row = 1 : size(E, 1)
+        for column = 1 : N
+            temp(row, column) = y(row, column * M - 1); %Optimum point Selection
+        end
+    end
+%% BER Calculation (Desicion)
+    br = zeros(size(E,1), N);
+    for row_counter = 1 : size(E,1)
+        for column_counter = 1 : N 
+           if real(temp(row_counter,column_counter)) <...
+                   imag(temp(row_counter,column_counter)) 
+               
+               br(row_counter,column_counter) = 0 ;
+           else 
+                br(row_counter,column_counter) = 1 ;
+           end
+        end
+    end
+%% BER Calculation (Prob of Error)
+    pe = zeros(size(E,1), 1) ; %Preallocating for Pr of error
+    clc;
+    for counter = 1 : size(E,1)
+        for column_counter = 1 : N 
+            if br(counter,column_counter) ~= data(column_counter)
+                   pe(counter,1) = pe(counter,1) + 1 ;
+            end
+        end
+    end
+%% Return
+    Bin_Or_unideal= pe' / N;
+
+
+
+
+
+
+
+
+
+
+
+end
+##### SOURCE END #####
+--></body></html>
